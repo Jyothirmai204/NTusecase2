@@ -1,16 +1,3 @@
-//package com.ems.main;
-//
-//import org.springframework.boot.SpringApplication;
-//import org.springframework.boot.autoconfigure.SpringBootApplication;
-//
-//@SpringBootApplication(scanBasePackages = "com.ems")
-//public class EmployeeApplication {
-//
-//    public static void main(String[] args) {
-//        SpringApplication.run(EmployeeApplication.class, args);
-//    }
-//}
-
 package com.ems.main;
 
 import org.springframework.boot.SpringApplication;

@@ -75,9 +75,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
+    // ✅ ✅ FINAL FIX HERE
     private void sendAndLog(Long id, String action) {
-        producer.sendEvent(id, action);
 
+        // ✅ 1. SAVE REST LOG FIRST
         AuditLog log = new AuditLog();
         log.setEmployeeId(id);
         log.setAction(action);
@@ -85,5 +86,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         log.setTimestamp(LocalDateTime.now());
 
         auditRepo.save(log);
+
+        // ✅ 2. THEN SEND MESSAGE
+        producer.sendEvent(id, action);
     }
 }
