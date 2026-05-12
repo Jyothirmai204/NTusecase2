@@ -1,5 +1,4 @@
 package com.ems.service;
-
 import com.ems.entity.*;
 import com.ems.messaging.EmployeeProducer;
 import com.ems.repository.*;
@@ -74,11 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new RuntimeException("XML Parsing Error");
         }
     }
-
-    // ✅ ✅ FINAL FIX HERE
     private void sendAndLog(Long id, String action) {
-
-        // ✅ 1. SAVE REST LOG FIRST
         AuditLog log = new AuditLog();
         log.setEmployeeId(id);
         log.setAction(action);
@@ -87,7 +82,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         auditRepo.save(log);
 
-        // ✅ 2. THEN SEND MESSAGE
+
         producer.sendEvent(id, action);
     }
 }
