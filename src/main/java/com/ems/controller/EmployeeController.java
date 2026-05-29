@@ -1,7 +1,7 @@
 //package com.ems.controller;
+//
 //import com.ems.entity.Employee;
 //import com.ems.service.EmployeeService;
-//import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.web.bind.annotation.*;
 //
 //import java.util.List;
@@ -10,8 +10,11 @@
 //@RequestMapping("/employees")
 //public class EmployeeController {
 //
-//    @Autowired
-//    private EmployeeService service;
+//    private final EmployeeService service;
+//
+//    public EmployeeController(EmployeeService service) {
+//        this.service = service;
+//    }
 //
 //    @PostMapping(consumes = "application/xml")
 //    public Employee create(@RequestBody String xml) {
@@ -26,12 +29,7 @@
 //    @DeleteMapping("/{id}")
 //    public String delete(@PathVariable Long id) {
 //        service.delete(id);
-//        return "Employee deleted successfully";
-//    }
-//
-//    @GetMapping("/{id}")
-//    public Employee getById(@PathVariable Long id) {
-//        return service.getById(id);
+//        return "Deleted successfully";
 //    }
 //
 //    @GetMapping
@@ -42,40 +40,102 @@
 
 package com.ems.controller;
 
-import com.ems.entity.Employee;
+import com.ems.dto.*;
 import com.ems.service.EmployeeService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/employees")
+@RequiredArgsConstructor
 public class EmployeeController {
 
     private final EmployeeService service;
 
-    public EmployeeController(EmployeeService service) {
-        this.service = service;
-    }
-
+    // ✅ CREATE (XML input)
     @PostMapping(consumes = "application/xml")
-    public Employee create(@RequestBody String xml) {
-        return service.create(xml);
+    public ResponseEntity<ResponseStructure<EmployeeResponseDTO>> create(
+            @RequestBody String xml) {
+
+        EmployeeResponseDTO data = service.create(xml);
+
+        ResponseStructure<EmployeeResponseDTO> response = new ResponseStructure<>(
+                "success",
+                "Employee created successfully",
+                data
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    // ✅ UPDATE
     @PutMapping("/{id}")
-    public Employee update(@PathVariable Long id, @RequestBody Employee emp) {
-        return service.update(id, emp);
+    public ResponseEntity<ResponseStructure<EmployeeResponseDTO>> update(
+            @PathVariable Long id,
+            @Valid @RequestBody EmployeeRequestDTO dto) {
+
+        EmployeeResponseDTO data = service.update(id, dto);
+
+        ResponseStructure<EmployeeResponseDTO> response = new ResponseStructure<>(
+                "success",
+                "Employee updated successfully",
+                data
+        );
+
+        return ResponseEntity.ok(response);
     }
 
+    // ✅ DELETE
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
+    public ResponseEntity<ResponseStructure<String>> delete(
+            @PathVariable Long id) {
+
         service.delete(id);
-        return "Deleted successfully";
+
+        ResponseStructure<String> response = new ResponseStructure<>(
+                "success",
+                "Employee deleted successfully",
+                null
+        );
+
+        return ResponseEntity.ok(response);
     }
 
+    // ✅ GET BY ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseStructure<EmployeeResponseDTO>> getById(
+            @PathVariable Long id) {
+
+        EmployeeResponseDTO data = service.getById(id);
+
+        ResponseStructure<EmployeeResponseDTO> response = new ResponseStructure<>(
+                "success",
+                "Employee fetched successfully",
+                data
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    // ✅ GET ALL
     @GetMapping
-    public List<Employee> getAll() {
-        return service.getAll();
+    public ResponseEntity<ResponseStructure<List<EmployeeResponseDTO>>> getAll() {
+
+        List<EmployeeResponseDTO> data = service.getAll();
+
+        ResponseStructure<List<EmployeeResponseDTO>> response =
+                new ResponseStructure<>(
+                        "success",
+                        "Employee list fetched",
+                        data
+                );
+
+        return ResponseEntity.ok(response);
     }
 }

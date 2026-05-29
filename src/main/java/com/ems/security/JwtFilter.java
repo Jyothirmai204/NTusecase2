@@ -26,7 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        // ✅ VERY IMPORTANT: Skip auth endpoints
+
         if (path.startsWith("/auth") || path.startsWith("/h2-console")) {
             filterChain.doFilter(request, response);
             return;
@@ -50,7 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
 
             } catch (Exception e) {
-                // ✅ If invalid token → continue without breaking request
+
                 SecurityContextHolder.clearContext();
             }
         }

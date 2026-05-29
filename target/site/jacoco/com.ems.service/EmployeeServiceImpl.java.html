@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmployeeServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ems</a> &gt; <a href="index.source.html" class="el_package">com.ems.service</a> &gt; <span class="el_source">EmployeeServiceImpl.java</span></div><h1>EmployeeServiceImpl.java</h1><pre class="source lang-java linenums">package com.ems.service;
+
+import com.ems.entity.*;
+import com.ems.messaging.EmployeeProducer;
+import com.ems.repository.*;
+import org.springframework.stereotype.Service;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
+
+import java.io.StringReader;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class EmployeeServiceImpl implements EmployeeService {
+
+    private final EmployeeRepository repo;
+    private final AuditLogRepository auditRepo;
+    private final EmployeeProducer producer;
+
+    public EmployeeServiceImpl(EmployeeRepository repo,
+                               AuditLogRepository auditRepo,
+<span class="fc" id="L24">                               EmployeeProducer producer) {</span>
+<span class="fc" id="L25">        this.repo = repo;</span>
+<span class="fc" id="L26">        this.auditRepo = auditRepo;</span>
+<span class="fc" id="L27">        this.producer = producer;</span>
+<span class="fc" id="L28">    }</span>
+
+    // ✅ CREATE (XML → Object)
+    @Override
+    public Employee create(String xml) {
+<span class="fc" id="L33">        Employee emp = convertXMLToObject(xml);</span>
+<span class="fc" id="L34">        Employee saved = repo.save(emp);</span>
+
+<span class="fc" id="L36">        sendAndLog(saved.getId(), &quot;CREATE&quot;);</span>
+<span class="fc" id="L37">        return saved;</span>
+    }
+
+    // ✅ ✅ ✅ UPDATE (FIXED ✅)
+    @Override
+    public Employee update(Long id, Employee emp) {
+
+        // ✅ Step 1: Find existing employee
+<span class="fc" id="L45">        Employee existing = repo.findById(id)</span>
+<span class="fc" id="L46">                .orElseThrow(() -&gt; new RuntimeException(&quot;Employee not found&quot;));</span>
+
+        // ✅ Step 2: Update only required fields
+<span class="fc" id="L49">        existing.setName(emp.getName());</span>
+<span class="fc" id="L50">        existing.setEmail(emp.getEmail());</span>
+<span class="fc" id="L51">        existing.setDepartment(emp.getDepartment());</span>
+
+        // ✅ Optional field
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (emp.getDateOfJoining() != null) {</span>
+<span class="fc" id="L55">            existing.setDateOfJoining(emp.getDateOfJoining());</span>
+        }
+
+        // ✅ Step 3: Save updated entity
+<span class="fc" id="L59">        Employee updated = repo.save(existing);</span>
+
+        // ✅ Audit + Messaging
+<span class="fc" id="L62">        sendAndLog(id, &quot;UPDATE&quot;);</span>
+
+<span class="fc" id="L64">        return updated;</span>
+    }
+
+    // ✅ DELETE
+    @Override
+    public void delete(Long id) {
+<span class="fc" id="L70">        repo.deleteById(id);</span>
+<span class="fc" id="L71">        sendAndLog(id, &quot;DELETE&quot;);</span>
+<span class="fc" id="L72">    }</span>
+
+    // ✅ GET BY ID
+    @Override
+    public Employee getById(Long id) {
+<span class="fc" id="L77">        return repo.findById(id)</span>
+<span class="fc" id="L78">                .orElseThrow(() -&gt; new RuntimeException(&quot;Employee not found&quot;));</span>
+    }
+
+    // ✅ GET ALL
+    @Override
+    public List&lt;Employee&gt; getAll() {
+<span class="fc" id="L84">        return repo.findAll();</span>
+    }
+
+    // ✅ XML → JAVA OBJECT
+    private Employee convertXMLToObject(String xml) {
+        try {
+<span class="fc" id="L90">            JAXBContext context = JAXBContext.newInstance(Employee.class);</span>
+<span class="fc" id="L91">            Unmarshaller unmarshaller = context.createUnmarshaller();</span>
+<span class="fc" id="L92">            return (Employee) unmarshaller.unmarshal(new StringReader(xml));</span>
+<span class="fc" id="L93">        } catch (Exception e) {</span>
+<span class="fc" id="L94">            throw new RuntimeException(&quot;XML parsing failed ❌&quot;);</span>
+        }
+    }
+
+    // ✅ AUDIT + ACTIVE MQ
+    private void sendAndLog(Long id, String action) {
+
+<span class="fc" id="L101">        AuditLog log = new AuditLog();</span>
+<span class="fc" id="L102">        log.setEmployeeId(id);</span>
+<span class="fc" id="L103">        log.setAction(action);</span>
+<span class="fc" id="L104">        log.setSource(&quot;REST&quot;);</span>
+<span class="fc" id="L105">        log.setTimestamp(LocalDateTime.now());</span>
+
+<span class="fc" id="L107">        auditRepo.save(log);</span>
+
+        // ✅ Send message to ActiveMQ
+<span class="fc" id="L110">        producer.sendEvent(id, action);</span>
+<span class="fc" id="L111">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

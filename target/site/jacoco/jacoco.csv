@@ -1,0 +1,17 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+ems,com.ems.controller,AuthController,0,19,0,0,0,5,0,3,0,3
+ems,com.ems.controller,EmployeeController,0,27,0,0,0,8,0,5,0,5
+ems,com.ems.service,UserService,0,54,0,4,0,13,0,5,0,3
+ems,com.ems.service,EmployeeServiceImpl,0,151,0,2,0,38,0,11,0,10
+ems,com.ems.config,SecurityConfig,65,0,0,0,14,0,8,0,8,0
+ems,com.ems.validation,XMLValidator,0,38,0,0,0,9,0,2,0,2
+ems,com.ems.security,JwtFilter,64,0,10,0,19,0,7,0,2,0
+ems,com.ems.security,JwtUtil,54,0,0,0,19,0,4,0,4,0
+ems,com.ems.main,EmployeeApplication,8,0,0,0,3,0,2,0,2,0
+ems,com.ems.entity,Employee,215,38,46,0,1,7,28,11,5,11
+ems,com.ems.entity,User,236,17,46,0,4,4,34,5,11,5
+ems,com.ems.entity,AuditLog,235,19,46,0,6,2,34,5,11,5
+ems,com.ems.corsconfig,GlobalCorsConfig.new WebMvcConfigurer() {...},29,0,0,0,6,0,2,0,2,0
+ems,com.ems.corsconfig,GlobalCorsConfig,8,0,0,0,2,0,2,0,2,0
+ems,com.ems.messaging,EmployeeProducer,16,0,0,0,6,0,2,0,2,0
+ems,com.ems.messaging,EmployeeConsumer,36,0,0,0,11,0,2,0,2,0

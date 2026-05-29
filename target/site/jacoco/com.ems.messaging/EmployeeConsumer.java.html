@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmployeeConsumer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ems</a> &gt; <a href="index.source.html" class="el_package">com.ems.messaging</a> &gt; <span class="el_source">EmployeeConsumer.java</span></div><h1>EmployeeConsumer.java</h1><pre class="source lang-java linenums">//package com.ems.messaging;
+//
+//import com.ems.entity.AuditLog;
+//import com.ems.repository.AuditLogRepository;
+//import org.springframework.jms.annotation.JmsListener;
+//import org.springframework.stereotype.Component;
+//
+//import java.time.LocalDateTime;
+//
+//@Component
+//public class EmployeeConsumer {
+//    private final AuditLogRepository auditRepo;
+//    public EmployeeConsumer(AuditLogRepository auditRepo) {
+//        this.auditRepo = auditRepo;
+//    }
+//
+//    @JmsListener(destination = &quot;employee.events&quot;)
+//    public void receive(String msg) {
+//
+//        System.out.println(&quot;Received: &quot; + msg);
+//        Long employeeId = extractId(msg);
+//
+//        AuditLog log = new AuditLog();
+//        log.setEmployeeId(employeeId);
+//        log.setAction(&quot;MESSAGE_RECEIVED&quot;);
+//        log.setSource(&quot;JMS&quot;);
+//        log.setTimestamp(LocalDateTime.now());
+//
+//        auditRepo.save(log);
+//    }
+//
+//    private Long extractId(String msg) {
+//        try {
+//            String[] parts = msg.split(&quot; &quot;);
+//            return Long.parseLong(parts[1]);
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
+//}
+
+package com.ems.messaging;
+
+import com.ems.entity.AuditLog;
+import com.ems.repository.AuditLogRepository;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+
+@Component
+public class EmployeeConsumer {
+
+    private final AuditLogRepository repo;
+
+<span class="nc" id="L56">    public EmployeeConsumer(AuditLogRepository repo) {</span>
+<span class="nc" id="L57">        this.repo = repo;</span>
+<span class="nc" id="L58">    }</span>
+
+    @JmsListener(destination = &quot;employee.events&quot;)
+    public void receive(String msg) {
+
+<span class="nc" id="L63">        Long id = Long.parseLong(msg.split(&quot; &quot;)[1]);</span>
+
+<span class="nc" id="L65">        AuditLog log = new AuditLog();</span>
+<span class="nc" id="L66">        log.setEmployeeId(id);</span>
+<span class="nc" id="L67">        log.setAction(&quot;MESSAGE_RECEIVED&quot;);</span>
+<span class="nc" id="L68">        log.setSource(&quot;JMS&quot;);</span>
+<span class="nc" id="L69">        log.setTimestamp(LocalDateTime.now());</span>
+
+<span class="nc" id="L71">        repo.save(log);</span>
+<span class="nc" id="L72">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

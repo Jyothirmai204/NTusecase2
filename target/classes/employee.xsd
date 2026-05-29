@@ -8,6 +8,9 @@
                 <xs:element name="email" type="xs:string"/>
                 <xs:element name="department" type="xs:string"/>
                 <xs:element name="dateOfJoining" type="xs:date"/>
+                <xs:element name="phone" type="xs:string"/>
+                <xs:element name="salary" type="xs:double"/>
+                <xs:element name="status" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

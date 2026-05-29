@@ -1,3 +1,59 @@
+//package com.ems.config;
+//
+//import com.ems.security.JwtFilter;
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+//import org.springframework.security.config.http.SessionCreationPolicy;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.web.SecurityFilterChain;
+//import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+//
+//@Configuration
+//public class SecurityConfig {
+//
+//    private final JwtFilter jwtFilter;
+//
+//    public SecurityConfig(JwtFilter jwtFilter) {
+//        this.jwtFilter = jwtFilter;
+//    }
+//
+//
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
+//
+//
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//
+//        http
+//
+//                .csrf(csrf -> csrf.disable())
+//
+//
+//                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+//
+//
+//                .sessionManagement(session ->
+//                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                )
+//
+//
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/auth/**", "/h2-console/**").permitAll()
+//                        .anyRequest().authenticated()
+//                )
+//
+//
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
+//}
+
 package com.ems.config;
 
 import com.ems.security.JwtFilter;
@@ -19,35 +75,26 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
-    // ✅ Password Encoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ Security Configuration
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // ✅ Disable CSRF
                 .csrf(csrf -> csrf.disable())
 
-                // ✅ Allow H2 console
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-
-                // ✅ JWT Session (stateless)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // ✅ Authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/h2-console/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll() // ✅ only auth open
                         .anyRequest().authenticated()
                 )
 
-                // ✅ Add JWT filter OUTSIDE authorize block
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

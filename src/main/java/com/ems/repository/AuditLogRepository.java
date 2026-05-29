@@ -1,10 +1,4 @@
-//package com.ems.repository;
-//
-//import com.ems.entity.AuditLog;
-//import org.springframework.data.jpa.repository.JpaRepository;
-//
-//public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
-//}
+
 package com.ems.repository;
 
 import com.ems.entity.AuditLog;
